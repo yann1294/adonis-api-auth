@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -17,7 +17,9 @@ class ContactController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async index({ request, response, view }) {
+    let contacts = await Contact.query().with("user").fetch();
+    return response.json(contacts);
   }
 
   /**
@@ -29,8 +31,7 @@ class ContactController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create ({ request, response, view }) {
-  }
+  async create({ request, response, view }) {}
 
   /**
    * Create/save a new contact.
@@ -40,7 +41,20 @@ class ContactController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response }) {
+    const name = request.input("name");
+    const email = request.input("email");
+    const title = request.input("title");
+    const tel = request.input("tel");
+
+    const contact = new Contact();
+    contact.name = name;
+    contact.email = email;
+    contact.title = title;
+    contact.tel = tel;
+
+    await contact.save();
+    return response.json(contact);
   }
 
   /**
@@ -52,8 +66,7 @@ class ContactController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
+  async show({ params, request, response, view }) {}
 
   /**
    * Render a form to update an existing contact.
@@ -64,8 +77,7 @@ class ContactController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async edit ({ params, request, response, view }) {
-  }
+  async edit({ params, request, response, view }) {}
 
   /**
    * Update contact details.
@@ -75,7 +87,20 @@ class ContactController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, response }) {
+    const name = request.input("name");
+    const email = request.input("email");
+    const title = request.input("title");
+    const tel = request.input("tel");
+
+    let contact = await Contact.find(params.id);
+
+    contact.name = name;
+    contact.email = email;
+    contact.title = title;
+    contact.tel = tel;
+    await contact.save();
+    return response.json(contact);
   }
 
   /**
@@ -86,8 +111,10 @@ class ContactController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, request, response }) {
+    await Contact.find(params.id).delete();
+    return response.json({ message: "Contact deleted!" });
   }
 }
 
-module.exports = ContactController
+module.exports = ContactController;
