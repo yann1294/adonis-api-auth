@@ -9,6 +9,7 @@ class ContactSchema extends Schema {
       table.string("email");
       table.string("title");
       table.string("tel");
+      table.integer("user_id").unsigned().references("id").inTable("users");
       table.timestamps();
     });
   }
